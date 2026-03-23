@@ -1,0 +1,48 @@
+# ===== Dependencies =====
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# ===== Environment Variables =====
+.env
+.env.local
+.env.development
+.env.production
+client/.env
+client/.env.local
+server/.env
+server/.env.local
+
+# ===== Build Files =====
+client/dist/
+client/build/
+server/dist/
+
+# ===== Logs =====
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== OS Files =====
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+
+# ===== Editor =====
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ===== Vite Cache =====
+client/.vite/
+.vite/
+
+# ===== Misc =====
+*.local
+.cache/

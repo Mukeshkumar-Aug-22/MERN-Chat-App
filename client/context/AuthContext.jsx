@@ -17,10 +17,10 @@ export const AuthProvider = ({ children }) => {
 
     // Check if the user is authenticated and if so, set the user data and connect to the socket
 
-     const checkAuth = async () => {
+    const checkAuth = async () => {
         try {
             const { data } = await axios.get("/api/auth/check-auth");
-            if(data.success){
+            if (data.success) {
                 setAuthUser(data.user);
                 connectSocket(data.user);
             }
@@ -33,25 +33,28 @@ export const AuthProvider = ({ children }) => {
 
     // Login Function to handle user Authentication and Socket connection
 
+    // In AuthContext.jsx - Update the login function
     const login = async (state, credentials) => {
         try {
             const { data } = await axios.post(`/api/auth/${state}`, credentials);
 
-            if(data.success){
+            if (data.success) {
                 setAuthUser(data.userData);
                 connectSocket(data.userData);
                 axios.defaults.headers.common["token"] = data.token;
                 setToken(data.token);
                 localStorage.setItem("token", data.token);
                 toast.success(data.message);
-            }
-            else{
+                return true;  // ← Return true on success
+            } else {
                 toast.error(data.message);
+                return false; // ← Return false on failure
             }
         } catch (error) {
-            toast.error(error.message);
+            toast.error(error.response?.data?.message || error.message);
+            return false;
         }
-    }
+    };
 
 
     // Logout Function to handle user Logout and Socket disconnection
@@ -74,13 +77,13 @@ export const AuthProvider = ({ children }) => {
         try {
             const { data } = await axios.put("/api/auth/update-profile", body);
 
-            if(data.success){
+            if (data.success) {
                 setAuthUser(data.user);
                 toast.success("Profile Updated Successfully");
             }
             else {
-    console.log("Cloudinary Config Check:", cloudinary.config()); // 👈 add this
-    const uploadResult = await cloudinary.uploader.upload(profilePic);
+                console.log("Cloudinary Config Check:", cloudinary.config()); // 👈 add this
+                const uploadResult = await cloudinary.uploader.upload(profilePic);
             }
         } catch (error) {
             toast.error(error.message);
@@ -90,10 +93,10 @@ export const AuthProvider = ({ children }) => {
     // Connect Socket function to handle socket connection and online users list:
 
     const connectSocket = (userData) => {
-        if(!userData || socket?.connected) return;
+        if (!userData || socket?.connected) return;
 
         // Connects to the backend server using the backend URL
-       // Passes the user's ID as a query parameter so the server knows who is connecting
+        // Passes the user's ID as a query parameter so the server knows who is connecting
         const newSocket = io(backendUrl, {
             query: {
                 userId: userData._id,
@@ -113,7 +116,7 @@ export const AuthProvider = ({ children }) => {
     }
     useEffect(() => {
 
-        if(token) {
+        if (token) {
             axios.defaults.headers.common["token"] = token;
         }
         checkAuth();
@@ -131,7 +134,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-           {children}
+            {children}
         </AuthContext.Provider>
     )
 

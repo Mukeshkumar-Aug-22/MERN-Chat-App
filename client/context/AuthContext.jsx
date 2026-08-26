@@ -241,6 +241,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const value = {
+        axios,  // ✅ ADD THIS - export axios instance
         authUser,
         onlineUsers,
         socket,

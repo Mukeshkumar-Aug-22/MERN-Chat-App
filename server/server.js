@@ -16,7 +16,7 @@ const server = http.createServer(app);
 // Create Socket.io Server
 
 export const io = new Server(server, {
-    cors: {origin: "*"}
+    cors: {origin: "https://chat-app-frontend-cpsc.onrender.com"}
 });
 
 // Store online users

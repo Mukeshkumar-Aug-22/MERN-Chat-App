@@ -5,16 +5,33 @@ import Login from './Pages/Login';
 import ProfilePage from './Pages/ProfilePage';
 import { Toaster } from 'react-hot-toast';
 import { AuthContext } from '../context/AuthContext';
-import assets from './assets/assets';  // ← Import assets
+import assets from './assets/assets';
 
 const App = () => {
-  const { authUser } = useContext(AuthContext);
+  const { authUser, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return (
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{ 
+          backgroundImage: `url(${assets.bgImage})`,
+          backgroundColor: '#1a1a2e'
+        }}
+      >
+        <div className="text-white text-center">
+          <div className="w-16 h-16 border-4 border-t-purple-500 border-r-transparent border-b-purple-500 border-l-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 
       className="min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ 
-        backgroundImage: `url(${assets.bgImage})`,  // ← Use assets.bgImage
+        backgroundImage: `url(${assets.bgImage})`,
         backgroundColor: '#1a1a2e'
       }}
     >

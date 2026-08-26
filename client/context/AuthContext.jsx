@@ -15,12 +15,10 @@ export const AuthProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [socket, setSocket] = useState(null);
 
-    // Check if the user is authenticated and if so, set the user data and connect to the socket
-
     const checkAuth = async () => {
         try {
             const { data } = await axios.get("/api/auth/check-auth");
-            if (data.success) {
+            if(data.success){
                 setAuthUser(data.user);
                 connectSocket(data.user);
             }
@@ -30,34 +28,26 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
-
-    // Login Function to handle user Authentication and Socket connection
-
-    // In AuthContext.jsx - Update the login function
+    // ORIGINAL LOGIN - WITHOUT returning a value
     const login = async (state, credentials) => {
         try {
             const { data } = await axios.post(`/api/auth/${state}`, credentials);
 
-            if (data.success) {
+            if(data.success){
                 setAuthUser(data.userData);
                 connectSocket(data.userData);
                 axios.defaults.headers.common["token"] = data.token;
                 setToken(data.token);
                 localStorage.setItem("token", data.token);
                 toast.success(data.message);
-                return true;  // ← Return true on success
-            } else {
+            }
+            else{
                 toast.error(data.message);
-                return false; // ← Return false on failure
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || error.message);
-            return false;
+            toast.error(error.message);
         }
-    };
-
-
-    // Logout Function to handle user Logout and Socket disconnection
+    }
 
     const logout = async () => {
         localStorage.removeItem("token");
@@ -69,54 +59,41 @@ export const AuthProvider = ({ children }) => {
         socket.disconnect();
     }
 
-
-    // Updates profile function to handle profile update: 
-
+    // ORIGINAL UPDATE PROFILE - Fixed version
     const updateProfile = async (body) => {
-
         try {
             const { data } = await axios.put("/api/auth/update-profile", body);
-
-            if (data.success) {
+            if(data.success){
                 setAuthUser(data.user);
                 toast.success("Profile Updated Successfully");
             }
             else {
-                console.log("Cloudinary Config Check:", cloudinary.config()); // 👈 add this
-                const uploadResult = await cloudinary.uploader.upload(profilePic);
+                toast.error(data.message || "Profile update failed");
             }
         } catch (error) {
             toast.error(error.message);
         }
     }
 
-    // Connect Socket function to handle socket connection and online users list:
-
     const connectSocket = (userData) => {
-        if (!userData || socket?.connected) return;
+        if(!userData || socket?.connected) return;
 
-        // Connects to the backend server using the backend URL
-        // Passes the user's ID as a query parameter so the server knows who is connecting
         const newSocket = io(backendUrl, {
             query: {
                 userId: userData._id,
             }
         });
 
-        // Connect the Socket
         newSocket.connect();
         setSocket(newSocket);
 
-        // Listens for a "getOnlineUsers" event from the server
-        // it updates the online users list in state variable
         newSocket.on("online-users", (userIds) => {
             setOnlineUsers(userIds);
         });
-
     }
-    useEffect(() => {
 
-        if (token) {
+    useEffect(() => {
+        if(token) {
             axios.defaults.headers.common["token"] = token;
         }
         checkAuth();
@@ -134,10 +111,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {children}
+           {children}
         </AuthContext.Provider>
     )
-
 }
-
-

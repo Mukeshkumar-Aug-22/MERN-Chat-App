@@ -12,11 +12,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [bio, setBio] = useState('');
   const [isDataSubmitted, setIsDataSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const { login } = useContext(AuthContext);
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
 
     if (currState === 'Sign up' && !isDataSubmitted) {
@@ -24,23 +23,10 @@ const Login = () => {
       return;
     }
 
-    try {
-      setLoading(true);
-      
-      const endpoint = currState === 'Sign up' ? 'Signup' : 'login';
-      const credentials = { fullName, email, password, bio };
-      
-      const success = await login(endpoint, credentials);
-      
-      if (success) {
-        navigate('/');
-        toast.success(currState === 'Sign up' ? 'Account created successfully!' : 'Welcome back!');
-      }
-    } catch (error) {
-      toast.error(error.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
-    }
+    const endpoint = currState === 'Sign up' ? 'Signup' : 'login';
+    const credentials = { fullName, email, password, bio };
+    
+    login(endpoint, credentials);
   };
 
   return (
@@ -90,7 +76,7 @@ const Login = () => {
               placeholder='Enter your password' 
               className='p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-transparent text-white placeholder-gray-400' 
               required 
-              minLength={6}
+              // ✅ NO minLength HERE!
             />
           </>
         )}
@@ -108,10 +94,9 @@ const Login = () => {
 
         <button 
           type='submit' 
-          className='py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md cursor-pointer hover:opacity-90 transition-opacity disabled:opacity-50'
-          disabled={loading}
+          className='py-3 bg-gradient-to-r from-purple-400 to-violet-600 text-white rounded-md cursor-pointer'
         >
-          {loading ? 'Processing...' : (currState === 'Sign up' ? 'Create Account' : 'Login Now')}
+          {currState === 'Sign up' ? 'Create Account' : 'Login Now'}
         </button>
 
         <div className='flex items-center gap-2 text-sm text-gray-500'>
